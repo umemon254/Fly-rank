@@ -1,1 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <title>Content Performance Decline Prediction | FlyRank ML Capstone</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.7;
+      color: #202124;
+      background: #f6f7f9;
+    }
+
+    .container {
+      width: min(1050px, 92%);
+      margin: 0 auto;
+    }
+
+    header {
+      background: #111827;
+      color: white;
+      padding: 70px 0 60px;
+    }
+
+    header h1 {
+      max-width: 900px;
+      margin: 0 0 20px;
+      font-size: clamp(32px, 5vw, 52px);
+      line-height: 1.15;
+    }
+
+    header p {
+      max-width: 800px;
+      margin: 10px 0;
+      color: #d1d5db;
+      font-size: 18px;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 6px 12px;
+      margin-bottom: 18px;
+      border: 1px solid #4b5563;
+      border-radius: 20px;
+      font-size: 13px;
+      color: #e5e7eb;
+    }
+
+    nav {
+      background: white;
+      border-bottom: 1px solid #e5e7eb;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    nav .container {
+      display: flex;
+      gap: 18px;
+      overflow-x: auto;
+      padding: 14px 0;
+    }
+
+    nav a {
+      color: #374151;
+      text-decoration: none;
+      white-space: nowrap;
+      font-size: 14px;
+    }
+
+    nav a:hover {
+      color: #111827;
+      text-decoration: underline;
+    }
+
+    main {
+      padding: 35px 0 70px;
+    }
+
+    section {
+      background: white;
+      margin-bottom: 24px;
+      padding: 38px;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+    }
+
+    h2 {
+      margin-top: 0;
+      color: #111827;
+      font-size: 28px;
+      border-bottom: 1px solid #e5e7eb;
+      padding-bottom: 10px;
+    }
+
+    h3 {
+      color: #111827;
+      margin-top: 30px;
+    }
+
+    .abstract {
+      font-size: 17px;
+    }
+
+    .callout {
+      background: #f3f4f6;
+      border-left: 4px solid #374151;
+      padding: 18px 20px;
+      margin: 24px 0;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin: 25px 0;
+    }
+
+    .metric {
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 20px;
+      background: #fafafa;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 28px;
+      color: #111827;
+      margin-bottom: 5px;
+    }
+
+    .metric span {
+      font-size: 14px;
+      color: #6b7280;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin: 25px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 760px;
+    }
+
+    th,
+    td {
+      padding: 12px 10px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: right;
+      font-size: 14px;
+    }
+
+    th:first-child,
+    td:first-child {
+      text-align: left;
+    }
+
+    th {
+      background: #f3f4f6;
+      color: #111827;
+    }
+
+    .highlight {
+      font-weight: bold;
+    }
+
+    figure {
+      margin: 30px 0;
+    }
+
+    figure img {
+      display: block;
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+    }
+
+    figcaption {
+      margin-top: 10px;
+      text-align: center;
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    ul,
+    ol {
+      padding-left: 25px;
+    }
+
+    li {
+      margin-bottom: 10px;
+    }
+
+    code {
+      background: #f3f4f6;
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-size: 0.92em;
+    }
+
+    .artifact-list a {
+      color: #1f2937;
+      font-weight: bold;
+    }
+
+    footer {
+      background: #111827;
+      color: #d1d5db;
+      padding: 35px 0;
+      text-align: center;
+    }
+
+    footer a {
+      color: white;
+    }
+
+    .small {
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    @media (max-width: 700px) {
+      section {
+        padding: 25px 20px;
+      }
+
+      .metric-grid {
+        grid-template-columns: 1fr;
+      }
+
+      header {
+        padding: 50px 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="container">
+      <div class="tag">FlyRank ML Internship — Capstone</div>
+
+      <h1>
+        Identifying Content Items at Risk of Click Decline
+      </h1>
+
+      <p>
+        A machine-learning study using March 2026 content-performance
+        signals to identify content items associated with substantial
+        click decline in April 2026.
+      </p>
+
+      <p>
+        <strong>Primary use:</strong> content-review prioritization and
+        decision support, not automated content management.
+      </p>
+    </div>
+  </header>
+
+  <nav>
+    <div class="container">
+      <a href="#abstract">Abstract</a>
+      <a href="#introduction">Introduction</a>
+      <a href="#data">Data</a>
+      <a href="#methodology">Methodology</a>
+      <a href="#results">Results</a>
+      <a href="#limitations">Limitations</a>
+      <a href="#recommendations">Recommendations</a>
+      <a href="#reproducibility">Reproducibility</a>
+      <a href="#acknowledgments">Data Credit</a>
+    </div>
+  </nav>
+
+  <main>
+    <div class="container">
+
+      <!-- 1. ABSTRACT -->
+      <section id="abstract">
+        <h2>1. Title + Abstract</h2>
+
+        <h3>Research Question</h3>
+
+        <p>
+          Can March 2026 content-performance signals identify content
+          items that experience a substantial decline in clicks in April
+          2026, using a client-held-out validation design?
+        </p>
+
+        <h3>Abstract</h3>
+
+        <p class="abstract">
+          This study investigates whether March 2026 content-performance
+          signals can identify content items associated with a substantial
+          decline in clicks during April 2026. The analysis uses aggregated
+          FlyRank ML Internship dataset signals and defines decline as April
+          clicks being at or below 80% of March clicks. A simple baseline
+          rule is compared with Logistic Regression and Random Forest using
+          a client-held-out validation design. Logistic Regression reached
+          Precision@20 of 0.85, while Random Forest reached Precision@50 of
+          0.84, showing different ranking behavior across the evaluation
+          measures. The resulting scores are framed as decision-support
+          signals for prioritizing human review rather than as proof of
+          causation or guaranteed future performance.
+        </p>
+
+        <div class="callout">
+          <strong>Decision supported:</strong>
+          Which content items should receive human review first when
+          content-maintenance time is limited?
+        </div>
+      </section>
+
+
+      <!-- 2. INTRODUCTION -->
+      <section id="introduction">
+        <h2>2. Introduction / Problem Statement</h2>
+
+        <p>
+          Content performance can change over time, creating a practical
+          review problem when a large number of content items need to be
+          monitored. A reviewer may have limited time and therefore needs
+          a way to prioritize which items should be inspected first.
+        </p>
+
+        <p>
+          This project approaches that problem as a supervised machine
+          learning and ranking task. Instead of attempting to automatically
+          modify content, the analysis asks whether information available
+          during March can provide a useful signal for identifying items
+          associated with a substantial reduction in clicks during April.
+        </p>
+
+        <p>
+          The intended output is therefore a prioritization signal. A high
+          score indicates that an item may deserve earlier human review; it
+          does not establish why the item changed or guarantee that an
+          intervention will improve its future performance.
+        </p>
+
+        <h3>Decision Context</h3>
+
+        <p>
+          The practical use case is content maintenance. Reviewers can use
+          the ranking and accompanying reason codes to decide which items
+          to inspect first, while retaining human judgment over any content
+          action.
+        </p>
+      </section>
+
+
+      <!-- 3. DATA -->
+      <section id="data">
+        <h2>3. Data</h2>
+
+        <p>
+          The analysis uses the FlyRank ML Internship dataset. March 2026
+          performance signals are used as model inputs, while April 2026
+          clicks provide the future outcome used to define the decline label.
+        </p>
+
+        <div class="metric-grid">
+          <div class="metric">
+            <strong>68,040</strong>
+            <span>Final observations</span>
+          </div>
+
+          <div class="metric">
+            <strong>March → April</strong>
+            <span>Evaluation window</span>
+          </div>
+
+          <div class="metric">
+            <strong>20%</strong>
+            <span>Decline threshold</span>
+          </div>
+        </div>
+
+        <h3>Input Signals</h3>
+
+        <ul>
+          <li><code>clicks_march</code></li>
+          <li><code>impressions_march</code></li>
+          <li><code>ctr_march</code></li>
+          <li><code>position_march</code></li>
+          <li><code>organic_sessions_march</code></li>
+          <li><code>ai_sessions_march</code></li>
+          <li><code>paid_sessions_march</code></li>
+          <li><code>referral_sessions_march</code></li>
+        </ul>
+
+        <h3>Outcome Definition</h3>
+
+        <p>
+          The analysis defines a declining item as:
+        </p>
+
+        <div class="callout">
+          <code>clicks_april &le; 0.80 × clicks_march</code>
+        </div>
+
+        <p>
+          Items with zero March clicks were excluded because the outcome
+          is defined relative to March clicks.
+        </p>
+
+        <p>
+          The analysis uses hashed client and content identifiers and does
+          not expose client identities, private URLs, or private search
+          queries.
+        </p>
+      </section>
+
+
+      <!-- 4. METHODOLOGY -->
+      <section id="methodology">
+        <h2>4. Methodology</h2>
+
+        <h3>Validation Design</h3>
+
+        <p>
+          The evaluation uses a client-level holdout design. Approximately
+          80% of clients were used for training and approximately 20% were
+          held out for testing. This reduces the risk of evaluating the
+          model on content from the same clients used to train it.
+        </p>
+
+        <p>
+          The training set contains 60,541 observations from 34 clients,
+          while the held-out test set contains 7,499 observations from
+          8 clients.
+        </p>
+
+        <h3>Models</h3>
+
+        <ol>
+          <li>
+            <strong>Baseline rule:</strong> a simple rule using March CTR
+            and position thresholds.
+          </li>
+
+          <li>
+            <strong>Logistic Regression:</strong> a linear classification
+            model with standardized features and balanced class weights.
+          </li>
+
+          <li>
+            <strong>Random Forest:</strong> an ensemble model using
+            constrained tree depth and minimum leaf size.
+          </li>
+        </ol>
+
+        <h3>Evaluation Metrics</h3>
+
+        <p>
+          The models were evaluated on the same held-out client test set
+          using precision, recall, F1, ROC-AUC, Average Precision,
+          Precision@20, and Precision@50.
+        </p>
+
+        <h3>Leakage Considerations</h3>
+
+        <p>
+          April clicks are used to construct the outcome label and are not
+          included among the March input features. The analysis therefore
+          treats the task as a March-to-April prediction and prioritization
+          problem.
+        </p>
+      </section>
+
+
+      <!-- 5. RESULTS -->
+      <section id="results">
+        <h2>5. Results</h2>
+
+        <p>
+          The evaluation compares the simple baseline rule, Logistic
+          Regression, and Random Forest on the same held-out client test
+          set.
+        </p>
+
+        <p>
+          The baseline achieved a precision of 0.763 and an Average
+          Precision of 0.745. Logistic Regression achieved an Average
+          Precision of 0.726 and the highest Precision@20 at 0.85.
+          Random Forest achieved an Average Precision of 0.742 and the
+          highest Precision@50 at 0.84.
+        </p>
+
+        <p>
+          Because the project is intended to prioritize content for human
+          review, Precision@20 and Precision@50 are useful ranking
+          measures. The results show different ranking behavior rather
+          than one model being strongest on every metric.
+        </p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>Precision</th>
+                <th>Recall</th>
+                <th>F1</th>
+                <th>ROC-AUC</th>
+                <th>Average Precision</th>
+                <th>Precision@20</th>
+                <th>Precision@50</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr>
+                <td>Baseline rule</td>
+                <td>0.763</td>
+                <td>0.407</td>
+                <td>0.531</td>
+                <td>0.531</td>
+                <td>0.745</td>
+                <td>0.75</td>
+                <td>0.64</td>
+              </tr>
+
+              <tr>
+                <td>Logistic Regression</td>
+                <td>0.726</td>
+                <td>0.475</td>
+                <td>0.574</td>
+                <td>0.477</td>
+                <td>0.726</td>
+                <td class="highlight">0.85</td>
+                <td>0.80</td>
+              </tr>
+
+              <tr>
+                <td>Random Forest</td>
+                <td>0.735</td>
+                <td>0.400</td>
+                <td>0.518</td>
+                <td>0.514</td>
+                <td>0.742</td>
+                <td>0.75</td>
+                <td class="highlight">0.84</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Model Comparison</h3>
+
+        <figure>
+          <img
+            src="work/figures/capstone_model_comparison.png"
+            alt="Comparison of baseline, Logistic Regression, and Random Forest model performance"
+          >
+
+          <figcaption>
+            Figure 1. Model ranking performance across Average Precision,
+            Precision@20, and Precision@50.
+          </figcaption>
+        </figure>
+
+        <div class="callout">
+          <strong>Practical interpretation:</strong>
+          The model scores can be used as prioritization signals for human
+          review. They should not be interpreted as proof that a content
+          item will decline, proof of why it declined, or proof that a
+          particular content change will recover performance.
+        </div>
+      </section>
+
+
+      <!-- 6. LIMITATIONS -->
+      <section id="limitations">
+        <h2>6. Limitations &amp; Honest Framing</h2>
+
+        <p>
+          This analysis has several important limitations.
+        </p>
+
+        <ul>
+          <li>
+            The study uses one March-to-April 2026 measurement window, so
+            the findings should not be treated as evidence that the same
+            relationships will hold across all future periods.
+          </li>
+
+          <li>
+            The model identifies statistical patterns associated with
+            observed decline. It does not establish causation.
+          </li>
+
+          <li>
+            A high model score means higher review priority; it does not
+            prove that an item will decline or that refreshing the item
+            will improve its performance.
+          </li>
+
+          <li>
+            The client-level holdout reduces the risk of evaluating the
+            model on the same clients used for training, but it does not
+            guarantee generalization to every possible client or content
+            environment.
+          </li>
+
+          <li>
+            The analysis uses aggregated performance signals and does not
+            contain all possible reasons why content performance may change.
+          </li>
+
+          <li>
+            Human review remains necessary before any content decision is
+            made.
+          </li>
+        </ul>
+
+        <p>
+          Therefore, the model is presented as a decision-support and
+          prioritization tool rather than an automatic content-management
+          system.
+        </p>
+      </section>
+
+
+      <!-- 7. RECOMMENDATIONS -->
+      <section id="recommendations">
+        <h2>7. Ranked Recommendations</h2>
+
+        <p>
+          The model output can be converted into a human-review queue using
+          observed performance signals and reason codes.
+        </p>
+
+        <h3>1. Review LOW_CTR Items</h3>
+
+        <p>
+          Check whether the title, search-intent alignment, and
+          communication of the page's value are clear.
+        </p>
+
+        <h3>2. Review WEAK_POSITION Items</h3>
+
+        <p>
+          Inspect search intent, topical coverage, and on-page relevance.
+        </p>
+
+        <h3>3. Review LOW_ORGANIC Items</h3>
+
+        <p>
+          Check the item's organic search visibility and whether the
+          observed traffic pattern requires further investigation.
+        </p>
+
+        <h3>4. Review LOW_AI Items</h3>
+
+        <p>
+          Review the structure, clarity, and usefulness of the content for
+          answer-oriented discovery.
+        </p>
+
+        <h3>5. Review Items with Multiple Reason Codes</h3>
+
+        <p>
+          Multiple signals can indicate that a broader content review may
+          be useful.
+        </p>
+
+        <div class="callout">
+          <strong>Human-review rule:</strong>
+          These recommendations are review prompts rather than automatic
+          actions. The model should not automatically rewrite, publish,
+          delete, redirect, or make client-facing content decisions.
+        </div>
+      </section>
+
+
+      <!-- 8. REPRODUCIBILITY -->
+      <section id="reproducibility">
+        <h2>8. Reproducibility</h2>
+
+        <p>
+          The analysis was developed in the project repository and
+          implemented through the capstone and supporting weekly notebooks.
+        </p>
+
+        <h3>Key Artifacts</h3>
+
+        <ul class="artifact-list">
+          <li>
+            <a href="work/notebooks/capstone.ipynb">
+              Capstone notebook
+            </a>
+          </li>
+
+          <li>
+            <a href="work/notebooks/w05_model.ipynb">
+              Week-5 modeling notebook
+            </a>
+          </li>
+
+          <li>
+            <a href="work/notebooks/w06_validation_audit.ipynb">
+              Week-6 validation audit
+            </a>
+          </li>
+
+          <li>
+            <a href="work/notebooks/w07_action_playbook.ipynb">
+              Week-7 action playbook
+            </a>
+          </li>
+
+          <li>
+            <a href="work/outputs/capstone_model_results.csv">
+              Model results CSV
+            </a>
+          </li>
+
+          <li>
+            <a href="work/outputs/capstone_metrics.json">
+              Capstone metrics JSON
+            </a>
+          </li>
+
+          <li>
+            <a href="work/figures/capstone_model_comparison.png">
+              Model comparison figure
+            </a>
+          </li>
+        </ul>
+
+        <p>
+          The analysis uses March 2026 content-performance signals to
+          predict the defined April 2026 decline outcome using a
+          client-held-out validation design.
+        </p>
+
+        <p class="small">
+          Repository:
+          <a href="https://github.com/umemon254/Fly-rank">
+            github.com/umemon254/Fly-rank
+          </a>
+        </p>
+      </section>
+
+
+      <!-- 9. ACKNOWLEDGMENTS -->
+      <section id="acknowledgments">
+        <h2>9. Acknowledgments &amp; Data Credit</h2>
+
+        <p>
+          This project was developed using the FlyRank ML Internship
+          dataset.
+        </p>
+
+        <p>
+          <strong>
+            Built on the FlyRank ML Internship dataset
+          </strong>
+          —
+          <a href="https://flyrank.ai" target="_blank" rel="noopener">
+            FlyRank
+          </a>
+        </p>
+
+        <p>
+          The analysis uses hashed identifiers and public-safe aggregate
+          performance signals. No client names, private URLs, or private
+          search queries are included in this paper.
+        </p>
+      </section>
+
+
+      <!-- FINAL NOTE -->
+      <section>
+        <h2>Final Takeaway</h2>
+
+        <p>
+          This project demonstrates a complete machine-learning workflow
+          from a practical content-performance question through data
+          preparation, model comparison, client-held-out validation,
+          ranking evaluation, interpretation, and a human-review action
+          playbook.
+        </p>
+
+        <p>
+          The central output is not an automatic content decision. It is a
+          structured prioritization signal that can help a reviewer decide
+          where to investigate first, while keeping the final decision
+          with a human.
+        </p>
+
+        <div class="callout">
+          <strong>Key measured signals:</strong>
+          Logistic Regression achieved Precision@20 of 0.85, while Random
+          Forest achieved Precision@50 of 0.84 on the held-out client test
+          set.
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>
+        FlyRank ML Internship — Machine Learning Capstone
+      </p>
+
+      <p class="small">
+        Analysis based on the FlyRank ML Internship dataset.
+      </p>
+    </div>
+  </footer>
+
+</body>
+</html>
