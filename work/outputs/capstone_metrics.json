@@ -1,0 +1,32 @@
+[
+  {
+    "model":"Baseline",
+    "precision":0.762978,
+    "recall":0.406848,
+    "f1":0.530704,
+    "roc_auc":0.530615,
+    "average_precision":0.74474,
+    "precision_at_20":0.75,
+    "precision_at_50":0.64
+  },
+  {
+    "model":"Logistic Regression",
+    "precision":0.725982,
+    "recall":0.474777,
+    "f1":0.574103,
+    "roc_auc":0.47746,
+    "average_precision":0.72582,
+    "precision_at_20":0.85,
+    "precision_at_50":0.8
+  },
+  {
+    "model":"Random Forest",
+    "precision":0.735432,
+    "recall":0.399927,
+    "f1":0.518108,
+    "roc_auc":0.514438,
+    "average_precision":0.742188,
+    "precision_at_20":0.75,
+    "precision_at_50":0.84
+  }
+]
